@@ -13,17 +13,17 @@ import { CloneWalletList } from "@/components/CloneWalletList";
 import { ApprovalList } from "@/components/ApprovalList";
 import { SafetyTimeline } from "@/components/SafetyTimeline";
 import { AiExplanation } from "@/components/AiExplanation";
-import AISecurityScanner from "@/components/AISecurityScanner"; // Import new loader
+import AISecurityScanner from "@/components/AISecurityScanner";
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const wallet = searchParams.get("wallet") || "";
+  
   const [result, setResult] = useState<ScanResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // NEW: Error state added
   
-  // Track the specific stage of the verifiable AI pipeline
-  // Updated types to match AISecurityScanner.tsx
   const [scanStep, setScanStep] = useState<'fetching' | 'ai-inference' | 'verifying' | 'idle'>('idle');
 
   useEffect(() => {
@@ -34,28 +34,23 @@ const Dashboard = () => {
 
     const performScan = async () => {
       setLoading(true);
-      setScanStep('fetching'); // Stage 1: Data Gathering
+      setError(null); // Reset error state on new scan
+      setScanStep('fetching');
       
       try {
-        // We simulate the progress steps because the backend returns 
-        // the whole verifiable payload in one final response.
-        
         const data = await scanWallet(wallet);
         
-        // Stage 2: AI Inference (Move here once data is received)
         setScanStep('ai-inference');
-        
-        // Brief artificial delay for UX to let user see "AI is analyzing"
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Stage 3: Verifying Proof
         setScanStep('verifying');
         await new Promise(resolve => setTimeout(resolve, 600));
         
         setResult(data);
-      } catch (error) {
-        console.error("Scan failed:", error);
-        navigate("/");
+      } catch (err: any) {
+        console.error("Scan failed:", err);
+        // FIX: Trap the error and set it to state instead of navigating away
+        setError(err.message || "Failed to connect to the AI Security Node.");
       } finally {
         setLoading(false);
         setScanStep('idle');
@@ -65,11 +60,32 @@ const Dashboard = () => {
     performScan();
   }, [wallet, navigate]);
 
-  // Loading State with the new advanced component
+  // Loading State
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <AISecurityScanner isScanning={loading} step={scanStep} />
+      </div>
+    );
+  }
+
+  // NEW: Error UI State
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center gap-4 bg-background">
+        <div className="p-4 bg-red-500/10 rounded-full border border-red-500/20">
+          <Shield className="w-12 h-12 text-red-500" />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground">Connection Error</h2>
+        <p className="text-muted-foreground font-mono bg-secondary p-3 rounded-lg text-sm max-w-lg break-words border border-border">
+          {error}
+        </p>
+        <button 
+          onClick={() => navigate("/")} 
+          className="text-primary hover:text-primary/80 transition-colors mt-4 flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" /> Go Back
+        </button>
       </div>
     );
   }
@@ -99,7 +115,7 @@ const Dashboard = () => {
             <span className="font-bold text-lg text-gradient-primary">WalletGuard</span>
           </div>
           <div className="flex items-center gap-3">
-            <code className="text-xs font-mono text-muted-foreground bg-secondary px-3 py-1 rounded">
+            <code className="text-xs font-mono text-muted-foreground bg-secondary px-3 py-1 rounded border border-border">
               {shortAddr}
             </code>
             <button
@@ -115,7 +131,6 @@ const Dashboard = () => {
 
       {/* Content */}
       <main className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Top row: Score + AI Explanation */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
