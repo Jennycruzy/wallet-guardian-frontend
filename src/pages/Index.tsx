@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, Search, Wallet, Keyboard } from "lucide-react";
+import { Shield, Search, Wallet, Keyboard, ArrowRight } from "lucide-react"; // Added ArrowRight
 import { motion } from "framer-motion";
 import { useAccount, useDisconnect } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -24,211 +24,129 @@ const Index = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="min-h-screen flex flex-col items-center justify-center px-4 gradient-glow-bg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+      className="w-full flex flex-col items-center gap-12" // Removed screen-centering, added gap
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
+      {/* 1. Brand Section */}
+      <div className="flex flex-col items-center gap-6 text-center">
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          className="px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md flex items-center gap-2"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase font-mono">
+            Verifiable AI Security
+          </span>
+        </motion.div>
+
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-4">
+            <Shield className="w-12 h-12 text-primary drop-shadow-[0_0_15px_rgba(175,255,230,0.3)]" />
+            <h1 className="text-5xl font-black tracking-tight text-gradient-primary">
+              WalletGuard
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-lg max-w-lg leading-relaxed">
+            Analyze risks with <span className="text-foreground font-semibold">OpenGradient's</span> TEE-verified AI. 
+            Connect or paste to start a deep-scan.
+          </p>
+        </div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-6 max-w-lg w-full">
-        {/* Verified badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.05, duration: 0.4 }}
-          className="px-5 py-2 rounded-full border border-primary/30 bg-primary/10 flex items-center gap-2"
-        >
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-xs font-semibold tracking-widest text-primary uppercase font-mono">Verifiable AI Security</span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="flex flex-col items-center gap-3"
-        >
-          <div className="flex items-center gap-3">
-            <Shield className="w-10 h-10 text-primary" />
-            <h1 className="text-4xl font-bold text-gradient-primary">WalletGuard</h1>
+      {/* 2. Process Flow (Visual Spacing Improved) */}
+      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
+        {[
+          { step: "01", title: "Paste", sub: "Wallet" },
+          { step: "02", title: "Fetch", sub: "Data" },
+          { step: "03", title: "Analyze", sub: "AI Scan" },
+          { step: "04", title: "Report", sub: "Proof" },
+        ].map((item, i) => (
+          <div key={item.step} className="glass-card p-4 flex flex-col items-center text-center group hover:border-primary/50 transition-colors">
+            <span className="text-[10px] font-bold text-primary/50 mb-1 font-mono">{item.step}</span>
+            <span className="text-sm font-bold text-foreground">{item.title}</span>
+            <span className="text-[10px] text-muted-foreground">{item.sub}</span>
           </div>
-        </motion.div>
+        ))}
+      </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-muted-foreground text-center text-lg"
-        >
-          Paste any wallet address or <span className="font-semibold text-gradient-primary">connect your wallet</span> for a security analysis — powered by <a href="https://opengradient.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenGradient</a>'s verifiable AI.
-        </motion.p>
-
-        {/* How it works flow */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.5 }}
-          className="w-full grid grid-cols-4 gap-2"
-        >
-          {[
-            { step: "01", title: "Paste", sub: "Enter address" },
-            { step: "02", title: "Fetch", sub: "Chain lookup" },
-            { step: "03", title: "Analyze", sub: "Threat scan" },
-            { step: "04", title: "Report", sub: "Risk score" },
-          ].map((item, i) => (
-            <div
-              key={item.step}
-              className="relative flex flex-col items-center gap-1.5 p-3 rounded-lg bg-secondary/50 border border-border hover:border-primary/40 hover:bg-primary/5 hover:shadow-[0_0_16px_hsl(175_80%_50%/0.15)] hover-scale transition-all duration-300 group"
-            >
-              <span className="text-[10px] font-mono text-primary font-bold">{item.step}</span>
-              <span className="text-xs font-semibold text-foreground">{item.title}</span>
-              <span className="text-[10px] text-muted-foreground">{item.sub}</span>
-              {i < 3 && (
-                <span className="absolute -right-2 top-1/2 -translate-y-1/2 text-primary/40 text-xs hidden sm:block">→</span>
-              )}
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Input card */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
-          className="w-full rounded-xl gradient-border-top card-gradient-border p-6 space-y-4"
-        >
-          {/* Mode toggle */}
-          <div className="flex rounded-lg bg-secondary/80 border border-border p-1 gap-1">
-            <button
-              onClick={() => setMode("paste")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-semibold transition-all duration-200 ${
-                mode === "paste"
-                  ? "bg-primary/15 text-primary border border-primary/30 shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Keyboard className="w-3.5 h-3.5" />
-              Paste Address
-            </button>
-            <button
-              onClick={() => setMode("connect")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-semibold transition-all duration-200 ${
-                mode === "connect"
-                  ? "bg-primary/15 text-primary border border-primary/30 shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Wallet className="w-3.5 h-3.5" />
-              Connect Wallet
-            </button>
-          </div>
-
-          {mode === "paste" ? (
-            <>
-              <span className="text-xs font-bold tracking-widest text-foreground uppercase font-mono">Wallet Address</span>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleScan()}
-                  placeholder="0x3a1b2c3d4e5f..."
-                  className="w-full px-4 py-3.5 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Try an example:{" "}
-                <button
-                  onClick={() => setAddress("0x9A1B2c3D4e5F6789abCDEF0123456789AbCdEf12")}
-                  className="text-primary hover:underline font-mono"
-                >
-                  0x9A1B...Ef12
-                </button>
-              </p>
-            </>
-          ) : (
-            <div className="flex flex-col items-center gap-4 py-4">
-              {isConnected && connectedAddress ? (
-                <>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-success/10 border border-success/30">
-                    <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                    <span className="text-sm font-semibold text-success">Connected</span>
-                  </div>
-                  <code className="text-sm font-mono text-foreground bg-secondary px-4 py-2 rounded-lg border border-border">
-                    {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
-                  </code>
-                  <button
-                    onClick={() => disconnect()}
-                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    Disconnect
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Wallet className="w-10 h-10 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground text-center">
-                    Connect your wallet to automatically scan your address
-                  </p>
-                  <button
-                    onClick={openConnectModal}
-                    className="px-6 py-3 rounded-lg btn-gradient flex items-center gap-2 text-sm"
-                  >
-                    <Wallet className="w-4 h-4" />
-                    Connect Wallet
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-
+      {/* 3. Main Input Card */}
+      <div className="w-full max-w-xl glass-card p-8 space-y-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+        
+        <div className="flex rounded-xl bg-secondary/50 p-1.5 border border-border/50">
           <button
-            onClick={handleScan}
-            disabled={!canScan}
-            className="w-full py-3.5 rounded-lg btn-gradient flex items-center justify-center gap-2 text-base"
+            onClick={() => setMode("paste")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${
+              mode === "paste" ? "bg-background text-primary shadow-xl" : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <Search className="w-4 h-4" />
-            Analyze
+            <Keyboard className="w-4 h-4" /> Paste Address
           </button>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="flex flex-wrap justify-center gap-3 text-xs text-muted-foreground"
-        >
-          {["Scam Tokens", "Clone Detection", "Approval Risks", "AI Analysis", "Timeline"].map((f) => (
-            <span key={f} className="px-3 py-1 rounded-full bg-secondary border border-border">{f}</span>
-          ))}
-        </motion.div>
-
-        {/* Powered by OpenGradient */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="flex flex-col items-center gap-3 pt-4"
-        >
-          <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-          <a
-            href="https://opengradient.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-2 px-4 py-2 rounded-full border border-primary/15 bg-primary/5 hover:bg-primary/10 transition-all"
+          <button
+            onClick={() => setMode("connect")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${
+              mode === "connect" ? "bg-background text-primary shadow-xl" : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <span className="text-xs text-muted-foreground">Powered by</span>
-            <span className="text-xs font-bold text-gradient-primary tracking-wide">OpenGradient</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          </a>
-          <p className="text-[10px] text-muted-foreground/60 text-center max-w-xs font-mono">
-            Verifiable AI inference on the OpenGradient Network — decentralized, transparent, onchain.
-          </p>
-        </motion.div>
+            <Wallet className="w-4 h-4" /> Connect Wallet
+          </button>
+        </div>
+
+        {mode === "paste" ? (
+          <div className="space-y-4">
+            <div className="flex justify-between items-end px-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Target Address</label>
+              <button 
+                onClick={() => setAddress("0x9A1B2c3D4e5F6789abCDEF0123456789AbCdEf12")}
+                className="text-[10px] text-primary hover:underline font-bold"
+              >
+                Use Example
+              </button>
+            </div>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="0x..."
+              className="w-full bg-background/50 border border-border px-4 py-4 rounded-xl font-mono text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center py-6 gap-4">
+            {isConnected ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-sm">
+                  {connectedAddress?.slice(0, 6)}...{connectedAddress?.slice(-4)}
+                </div>
+                <button onClick={() => disconnect()} className="text-[10px] text-muted-foreground hover:text-destructive underline uppercase font-bold tracking-tighter">Disconnect</button>
+              </div>
+            ) : (
+              <button onClick={openConnectModal} className="btn-analyze w-full">Connect Wallet</button>
+            )}
+          </div>
+        )}
+
+        <button
+          onClick={handleScan}
+          disabled={!canScan}
+          className="btn-analyze w-full flex items-center justify-center gap-3 group"
+        >
+          <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          Analyze Security
+        </button>
+      </div>
+
+      {/* 4. Feature Pills */}
+      <div className="flex flex-wrap justify-center gap-2 max-w-md opacity-60">
+        {["Scam Detection", "TEE Proofs", "Approvals", "Risk Score"].map((f) => (
+          <span key={f} className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-border bg-secondary/30">
+            {f}
+          </span>
+        ))}
       </div>
     </motion.div>
   );

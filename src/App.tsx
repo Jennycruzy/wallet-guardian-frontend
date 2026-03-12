@@ -16,11 +16,16 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Index />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {/* WRAPPER FIX: Adding 'main-container' and vertical padding here 
+         ensures all pages (Index & Dashboard) are centered and spaced correctly.
+      */}
+      <main className="main-container py-12 px-4 min-h-[90vh] flex flex-col items-center">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
     </AnimatePresence>
   );
 };
@@ -36,6 +41,9 @@ const App = () => (
         })}
       >
         <TooltipProvider>
+          {/* The background glow is applied to the entire browser window 
+             thanks to the body styles we added to index.css earlier.
+          */}
           <BrowserRouter>
             <AnimatedRoutes />
           </BrowserRouter>
