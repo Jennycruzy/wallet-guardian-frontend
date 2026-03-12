@@ -4,7 +4,7 @@ import type { ScanResult } from "@/types/wallet";
  * For Vercel/Production: Set VITE_API_URL in your Vercel Dashboard.
  * Example: https://your-backend-name.onrender.com/api/v1
  */
-const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+const API_BASE = import.meta.env.VITE_API_URL || "https://wallet-guardian-backend.onrender.com";
 
 export async function scanWallet(walletAddress: string): Promise<ScanResult> {
   try {
